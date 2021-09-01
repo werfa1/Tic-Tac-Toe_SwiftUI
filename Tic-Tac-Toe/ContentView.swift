@@ -15,6 +15,7 @@ struct ContentView: View {
     
     @State private var moves: [Move?] = Array(repeating: nil, count: 9)
     @State private var isGameBoardDisabled = false
+    @State private var alertItem: AlertItem?
     
     var body: some View {
         GeometryReader { geometry in
@@ -40,11 +41,11 @@ struct ContentView: View {
                             isGameBoardDisabled = true
                             
                             if checkWinCondition(for: .human, in: moves) {
-                                print("humans wins")
+                                alertItem = AlertContext.humanWin
                             }
                             
                             if checkForDraw(in: moves) {
-                                print("Draw")
+                                alertItem = AlertContext.draw
                             }
                             
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -52,11 +53,11 @@ struct ContentView: View {
                                 moves[computerPosition] = Move(player: .computer, boardIndex: computerPosition)
                                 isGameBoardDisabled = false
                                 if checkWinCondition(for: .computer, in: moves) {
-                                    print("computers wins")
+                                    alertItem = AlertContext.computerWin
                                 }
                                 
                                 if checkForDraw(in: moves) {
-                                    print("Draw")
+                                    alertItem = AlertContext.draw
                                 }
                             }
                         }
@@ -66,6 +67,12 @@ struct ContentView: View {
             }
             .disabled(isGameBoardDisabled)
             .padding()
+            .alert(item: $alertItem, content: { alertItem in
+                Alert(title: alertItem.title,
+                      message: alertItem.message,
+                      dismissButton: .default(alertItem.buttonTitle,
+                                              action: restartTheGame))
+            })
         }
     }
     
@@ -95,6 +102,10 @@ struct ContentView: View {
     
     func checkForDraw(in moves: [Move?]) -> Bool {
         return moves.compactMap{ $0 }.count == 9
+    }
+    
+    func restartTheGame() {
+        moves = Array(repeating: nil, count: 9)
     }
 }
 
