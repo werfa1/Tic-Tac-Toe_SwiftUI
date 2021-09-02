@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+//MARK: - Game View -
+
 struct GameView: View {
     
     @StateObject private var viewModel = GameViewModel()
@@ -21,7 +23,7 @@ struct GameView: View {
                             
                             CircleView(geometry: geometry)
                             
-                            PlayerIndicator(systemImageName: viewModel.moves[i]?.indicator ?? "")
+                            PlayerIndicatorView(systemImageName: viewModel.moves[i]?.indicator ?? "")
                         }
                         .onTapGesture {
                             viewModel.processPlayerMove(for: i)
@@ -42,6 +44,8 @@ struct GameView: View {
     }
 }
 
+//MARK: - Circle View -
+
 struct CircleView : View {
     
     var geometry: GeometryProxy
@@ -49,24 +53,27 @@ struct CircleView : View {
     var body : some View {
         Circle()
             .foregroundColor(.purple)
-            .frame(width: geometry.size.width / 3 - 15,
-                   height: geometry.size.width / 3 - 15)
+            .frame(width: geometry.size.width / 3 - Offsets.safeAreaOffset,
+                   height: geometry.size.width / 3 - Offsets.safeAreaOffset)
     }
+}
+
+//MARK: - Player Indicator View -
+
+struct PlayerIndicatorView: View {
     
-}
-
-enum Player {
-    case human
-    case computer
-}
-
-struct Move {
-    let player: Player
-    let boardIndex: Int
-    var indicator: String {
-        return player == .human ? "xmark" : "circle"
+    var systemImageName: String
+    
+    var body: some View {
+        Image(systemName: systemImageName)
+            .resizable()
+            .frame(width: Sizes.imageSide,
+                   height: Sizes.imageSide)
+            .foregroundColor(.white)
     }
 }
+
+//MARK: - Preview -
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
@@ -74,15 +81,22 @@ struct ContentView_Previews: PreviewProvider {
     }
 }
 
-struct PlayerIndicator: View {
+//MARK: - Constants -
+
+extension CircleView {
     
-    var systemImageName: String
+    private enum Offsets {
+        
+        /// # 15
+        static let safeAreaOffset : CGFloat = 15
+    }
+}
+
+extension PlayerIndicatorView {
     
-    var body: some View {
-        Image(systemName: systemImageName)
-            .resizable()
-            .frame(width: 40,
-                   height: 40)
-            .foregroundColor(.white)
+    private enum Sizes {
+        
+        /// # 40
+        static let imageSide : CGFloat = 40
     }
 }

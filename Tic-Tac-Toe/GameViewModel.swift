@@ -7,7 +7,11 @@
 
 import SwiftUI
 
+//MARK: - Main ViewModel
+
 final class GameViewModel: ObservableObject {
+    
+    //MARK: - Properties -
     
     let columns : [GridItem] = [GridItem(.flexible()),
                                 GridItem(.flexible()),
@@ -17,7 +21,10 @@ final class GameViewModel: ObservableObject {
     @Published var isGameBoardDisabled = false
     @Published var alertItem: AlertItem?
     
+    //MARK: - Game Logic Functions -
+    
     func processPlayerMove(for position: Int) {
+        
         guard moves[position] == nil else { return }
         moves[position] = Move(player: .human,
                         boardIndex: position)
@@ -113,4 +120,19 @@ final class GameViewModel: ObservableObject {
     func restartTheGame() {
         moves = Array(repeating: nil, count: 9)
     } 
+}
+
+//MARK: - Supporting Elements -
+
+enum Player {
+    case human
+    case computer
+}
+
+struct Move {
+    let player: Player
+    let boardIndex: Int
+    var indicator: String {
+        return player == .human ? "xmark" : "circle"
+    }
 }
